@@ -1,0 +1,796 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip> 
+#include <algorithm>
+using namespace std;
+class Person {
+protected:
+    string hoVaTen;
+    string Ma;
+    string ngaySinh;
+    string gioiTinh;
+public:
+	void NhapThongTinPS(ifstream &f)
+		{
+				getline(f, hoVaTen, '|');
+				getline(f,ngaySinh,'|');
+				getline(f,gioiTinh,'|');
+				getline(f,Ma,'|');
+		}
+    	void hienThiPS(ofstream &f)
+		 {
+   		    f <<"|"<< setw(19) << hoVaTen <<"|"<< setw(10) << Ma <<"|"<< setw(15) << ngaySinh <<"|"<<setw(10) << gioiTinh;
+ 	   }
+ 	   void hienThiPS()
+		 {
+   		    cout <<"|"<< setw(19) << hoVaTen <<"|"<< setw(10) << Ma <<"|"<< setw(15) << ngaySinh <<"|"<<setw(10) << gioiTinh;
+ 	   }
+ 	   string getMa()
+	   {
+	   	 return Ma; 
+	   }	 
+};
+class Giaovien : public Person {
+protected:
+    string chucDanh;
+    string chucVu; 
+    string donVi;
+public:
+   void NhapThongTinGV(ifstream &f)
+		{
+				Giaovien::NhapThongTinPS(f);
+				string line;
+				getline(f, chucDanh, '|');
+				getline(f, chucVu, '|');
+				getline(f,donVi,'|');
+		}
+    void hienThi(ofstream &f){
+    	Person::hienThiPS(f); 
+	f<<"|"<<setw(10)<<chucDanh<<"|"<<setw(10)<<chucVu<<"|"<<setw(16)<<donVi;
+    }
+    void hienThi(){
+    	Person::hienThiPS(); 
+	cout<<"|"<<setw(10)<<chucDanh<<"|"<<setw(10)<<chucVu<<"|"<<setw(16)<<donVi;
+    }
+    string getchucDanh()
+    {
+    	return chucDanh; 
+	}
+	string getchucVu()
+    {
+    	return chucVu; 
+	}
+	string getdonVi()
+    {
+    	return donVi; 
+	}
+};
+
+class Giangvien : public Giaovien {
+private:
+    int gioDay,gioNghienCuu,gioChuyenMon;
+public:
+   void NhapThongTinGiV(ifstream &f)
+		{
+				Giangvien::NhapThongTinGV(f);
+				string line;
+				f>>gioDay;
+				getline(f,line,'|');
+				f>>gioNghienCuu;
+				getline(f,line,'|');
+				f>>gioChuyenMon;
+		}
+    string hoanThanhNhiemVu(int minTeachingHours=60, int minResearchHours=75, int minSpecializedHours=90) {
+        if ((gioDay >= minTeachingHours) && (gioNghienCuu >= minResearchHours) && (gioChuyenMon >= minSpecializedHours))
+		return "Hoan thanh nhiem vu";
+		else  return "Khong hoan thanh nhiem vu";
+	}
+    void hienThi(ofstream &f){   
+    Giaovien::hienThi(f);
+	f<<"|"<<setw(9)<< gioDay <<"|"
+            << setw(14) << gioNghienCuu <<"|"<< setw(14) << gioChuyenMon <<"|"<< setw(26) << hoanThanhNhiemVu()<<"|";
+    }
+    void hienThi(){   
+    Giaovien::hienThi();
+	cout<<"|"<<setw(9)<< gioDay <<"|"
+            << setw(14) << gioNghienCuu <<"|"<< setw(14) << gioChuyenMon <<"|"<< setw(26) << hoanThanhNhiemVu()<<"|";
+    }
+    friend bool ss(Giangvien a,Giangvien b); 
+    int getgioDay()
+    {
+    	return gioDay; 
+	}
+	int getgioNghienCuu()
+    {
+    	return gioNghienCuu; 
+	}
+	int getgioChuyenMon()
+    {
+    	return gioChuyenMon; 
+	}
+	friend class QuanLy;
+};
+bool ss(Giangvien a,Giangvien b)
+{
+	return (a.gioDay+a.gioNghienCuu+a.gioChuyenMon>b.gioDay+b.gioNghienCuu+b.gioChuyenMon)?true:false; 
+}
+class Chuyenvien : public Giaovien {
+private:
+    string chucDanh,donVi;
+    int soSangKienKinhNghiem;
+public: 
+    void NhapThongTinCV(ifstream &f)
+		{
+				Chuyenvien::NhapThongTinGV(f);
+				string line;
+				f>>soSangKienKinhNghiem;
+		}
+
+    string hoanThanhNhiemVu() {
+        if(soSangKienKinhNghiem > 0)
+        return "Hoan thanh nhiem vu";
+		else  return "Khong hoan thanh nhiem vu";
+    }
+
+    void hienThi(ofstream &f) {
+    	
+		Giaovien::hienThi(f);
+		f<<"|"<<setw(12)<< soSangKienKinhNghiem <<"|"<< setw(25) << hoanThanhNhiemVu()<<"|";
+    }
+    void hienThi() {
+    	
+		Giaovien::hienThi();
+		cout<<"|"<<setw(12)<< soSangKienKinhNghiem <<"|"<< setw(25) << hoanThanhNhiemVu()<<"|";
+    }
+    friend bool ss(Chuyenvien a,Chuyenvien b); 
+    int getsoSangKienKinhNghiem()
+    {
+    	return soSangKienKinhNghiem; 
+	}
+	friend class QuanLy;
+};
+bool ss(Chuyenvien a,Chuyenvien b)
+{
+	return (a.soSangKienKinhNghiem>b.soSangKienKinhNghiem)?1:0; 
+}
+class Sinhvien : public Person {
+private:
+    string lop,khoa;
+    double diemTrungBinh;
+public:
+   void NhapThongTinSV(ifstream &f)
+		{
+				string line;
+				Sinhvien::NhapThongTinPS(f);
+				getline(f,lop, '|');
+				getline(f,khoa,'|');
+				f>>diemTrungBinh;
+		}
+    string xepLoai() {
+        if (diemTrungBinh >= 3.5)
+            return "Xuat sac";
+        else if (diemTrungBinh >= 3.0)
+            return "Gioi";
+        else
+            return "Khong dat";
+    }
+
+    void hienThi(ofstream &f) {
+        Sinhvien::hienThiPS(f);
+		f<<"|"<<setw(10) << lop<<"|"
+            << setw(10) << khoa <<"|"<< setw(16) << diemTrungBinh <<"|"<< setw(14) << xepLoai()<<"|";
+    }
+    void hienThi() {
+        Sinhvien::hienThiPS();
+		cout<<"|"<<setw(10) << lop<<"|"
+            << setw(10) << khoa <<"|"<< setw(16) << diemTrungBinh <<"|"<< setw(14) << xepLoai()<<"|";
+    }
+    friend bool ss(Sinhvien a,Sinhvien b); 
+    string getlop()
+    {
+    	return lop; 
+	}
+	string getkhoa()
+    {
+    	return khoa; 
+	}
+	double getdiemTB()
+    {
+    	return diemTrungBinh; 
+	}
+	string getMSV()
+    {
+    	return Ma; 
+	}
+	friend class QuanLy;
+};
+bool ss(Sinhvien a,Sinhvien b)
+{
+	return (a.diemTrungBinh>b.diemTrungBinh)?1:0; 
+}
+class QuanLy
+ {
+	private:     
+	Giangvien giangViens[1000];
+	Chuyenvien chuyenViens[1000];
+	Sinhvien sinhViens[1000];
+    int soLuongGiangVien, soLuongChuyenVien, soLuongSinhVien;
+    public: 
+	void Nhap() 
+	{
+		ifstream f;
+	f.open("Quanly.inp");
+	string a; 
+	f >> soLuongGiangVien;
+	getline(f,a,'\n'); 
+	for(int i=0;i<soLuongGiangVien;i++)
+	{
+		string line;
+		giangViens[i].NhapThongTinGiV(f);
+		getline (f,line,'\n');
+	}
+ 	 f >> soLuongChuyenVien;
+	getline(f,a,'\n'); 
+	for(int i=0;i<soLuongChuyenVien;i++)
+	{
+		string line;
+		chuyenViens[i].NhapThongTinCV(f);
+		getline (f,line,'\n');
+	}
+    f >> soLuongSinhVien;
+	getline(f,a,'\n'); 
+	for(int i=0;i<soLuongSinhVien;i++)
+	{
+		string line;
+		sinhViens[i].NhapThongTinSV(f);
+		getline (f,line,'\n');
+	}
+	getline(f,a,'\n'); 
+	f.close();
+	}
+	void hienThiGiangVien(ofstream &g) 
+	{
+    g << "Danh sach Giang vien:\n";
+    g<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    g <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(10)<<"Chuc danh |" 
+        << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(10)<<"Gio day |" 
+        << setw(13) << "Gio nghien cuu|" << setw(15) << "Gio chuyen mon|" << setw(27) << "Khen thuong |"<< endl;
+        g<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    for (int i = 0; i < soLuongGiangVien; ++i) {
+    	giangViens[i].hienThi(g);g<<"\n";
+        
+    }
+    g<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+	}
+	void hienThiGiangVien() 
+	{
+    cout << "Danh sach Giang vien:\n";
+    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(10)<<"Chuc danh |" 
+        << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(10)<<"Gio day |" 
+        << setw(13) << "Gio nghien cuu|" << setw(15) << "Gio chuyen mon|" << setw(27) << "Khen thuong |"<< endl;
+        cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    for (int i = 0; i < soLuongGiangVien; ++i) {
+    	giangViens[i].hienThi();cout<<"\n";
+        
+    }
+    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+	}
+	void hienThiChuyenVien(ofstream &g) 
+	{
+    g << "Danh sach Chuyen vien:\n";
+    g<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+    g <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<" Chuc danh |" 
+        << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(13) << "So SKKN|"<<setw(26) << "Khen thuong |"<< endl;
+        g<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+    for (int i = 0; i < soLuongChuyenVien; ++i) {
+    	chuyenViens[i].hienThi(g);g<<"\n";
+    }
+    g<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+	}   
+	void hienThiChuyenVien() 
+	{
+    cout << "Danh sach Chuyen vien:\n";
+    cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<" Chuc danh |" 
+        << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(13) << "So SKKN|"<<setw(26) << "Khen thuong |"<< endl;
+        cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+    for (int i = 0; i < soLuongChuyenVien; ++i) {
+    	chuyenViens[i].hienThi();cout<<"\n";
+    }
+    cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+	}   
+	void hienThiSinhVien(ofstream &g) 
+	{
+    g << "Danh sach Sinh vien:\n";
+    g<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+    g <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma HS" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<"  Lop |" << setw(11) << " Khoa |" << setw(17) << "Diem Trung binh |"<<setw(15)<<"Xep loai |"<< endl;
+    g<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+    for (int i = 0; i < soLuongSinhVien; ++i) {
+    	sinhViens[i].hienThi(g);g<<"\n";
+    }
+    g<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+	} 
+	void hienThiSinhVien() 
+	{
+    cout << "Danh sach Sinh vien:\n";
+    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma HS" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<"  Lop |" << setw(11) << " Khoa |" << setw(17) << "Diem Trung binh |"<<setw(15)<<"Xep loai |"<< endl;
+    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+    for (int i = 0; i < soLuongSinhVien; ++i) {
+    	sinhViens[i].hienThi();cout<<"\n";
+    }
+    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+	}   
+    void sxgv(ofstream &g)
+	{
+		for(int i=0;i<soLuongGiangVien-1;i++)
+		for(int j=i+1;j<soLuongGiangVien;j++)
+		if(ss(giangViens[i],giangViens[j])) 
+		swap(giangViens[i],giangViens[j]);
+		g<<"Da sap xep giang vien thanh cong.\n"; 
+	} 
+	void sxcv(ofstream &g)
+	{
+		for(int i=0;i<soLuongChuyenVien-1;i++)
+		for(int j=i+1;j<soLuongChuyenVien;j++)
+		if(ss(chuyenViens[i],chuyenViens[j])) 
+		swap(chuyenViens[i],chuyenViens[j]);
+		g<<"Da sap xep chuyen vien thanh cong.\n"; 
+	}
+	void sxsv(ofstream &g)
+	{
+		for(int i=0;i<soLuongSinhVien-1;i++)
+		for(int j=i+1;j<soLuongSinhVien;j++)
+		if(ss(sinhViens[i],sinhViens[j])) 
+		swap(sinhViens[i],sinhViens[j]);
+		g<<"Da sap xep sinh vien thanh cong.\n"; 
+	}
+	
+	void TimKiemTheoCacTieuChi()
+	{
+		int chon;
+		do
+		{	
+			system("cls"); 
+			cout<<"\n==============================TIM KIEM THEO CAC TIEU CHI==============================\n";
+			cout<<"0. Thoat chuc nang\n";
+			cout<<"1. Tim kiem theo Giang vien\n";
+			cout<<"2. Tim kiem theo Chuyen vien\n";
+			cout<<"3. Tim kiem theo Sinh vien\n";
+			cout<<"Nhap lua chon: ";
+			cin>>chon; 
+			switch (chon)
+			{
+				case 0:
+				{
+					cout<<"Tim kiem hoan tat.";
+					cout<<endl; 
+					break;
+				}
+				case 1:
+				{
+					int ch;
+					do
+					{	system("pause");
+						system("cls"); 
+						cout<<"\n==============================TIM KIEM GIANG VIEN==============================\n";
+						cout<<"0. Thoat chuc nang\n";
+						cout<<"1. Tim kiem Ma GV \n";
+					    cout<<"2. Tim kiem Gio day\n";
+						cout<<"3. Tim kiem Gio nghien cuu\n";
+						cout<<"4. Tim kiem Gio chuyen mon\n";
+						cout<<"5. Tim kiem Khen thuong\n";
+						cout<<"Nhap lua chon: ";
+						cin>>ch; 
+						switch (ch)
+						{
+							case 0:
+							{
+								cout<<"Tim kiem Giang vien hoan tat.";
+								cout<<endl; 
+								break;
+							}
+							case 1:
+							{
+								string MaGV;int d=0; 
+								cout<<"Nhap Ma GV can tim: "; fflush(stdin); getline(cin,MaGV); 
+								for (int i = 0; i < soLuongGiangVien; ++i) 
+    							if(giangViens[i].getMa()==MaGV)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{
+  			 			 			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+ 								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(10)<<"Chuc danh |" 
+    							    << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(10)<<"Gio day |" << setw(13) << "Gio nghien cuu|" << setw(15) << "Gio chuyen mon|" << setw(27) << "Khen thuong |"<< endl;
+       				    			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    								for (int i = 0; i < soLuongGiangVien; ++i) 
+    								if(giangViens[i].getMa()==MaGV)
+									{
+	 									giangViens[i].hienThi();cout<<"\n";
+  			 			 			}
+  			  						cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n";
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								break; 
+							}
+							case 2:
+							{
+								int Gioday;int d=0; 
+								cout<<"Nhap gio day can tim: "; cin>>Gioday; 
+								for (int i = 0; i < soLuongGiangVien; ++i) 
+    							if(giangViens[i].getgioDay()==Gioday)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{
+  			 			 			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+ 								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(10)<<"Chuc danh |" 
+    							    << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(10)<<"Gio day |" << setw(13) << "Gio nghien cuu|" << setw(15) << "Gio chuyen mon|" << setw(27) << "Khen thuong |"<< endl;
+       				    			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    								for (int i = 0; i < soLuongGiangVien; ++i) 
+    								if((giangViens[i].getgioDay()==Gioday))
+									{
+	 									giangViens[i].hienThi();cout<<"\n";
+  			 			 			}
+  			  						cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n";
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								break;
+							}
+							case 3:
+ 							{
+								int Gionghiencuu;int d=0; 
+								cout<<"Nhap gio nghien cuu can tim: "; cin>>Gionghiencuu; 
+								for (int i = 0; i < soLuongGiangVien; ++i) 
+    							if(giangViens[i].getgioNghienCuu()==Gionghiencuu)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{
+  			 			 			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+ 								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(10)<<"Chuc danh |" 
+    							    << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(10)<<"Gio day |" << setw(13) << "Gio nghien cuu|" << setw(15) << "Gio chuyen mon|" << setw(27) << "Khen thuong |"<< endl;
+       				    			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    								for (int i = 0; i < soLuongGiangVien; ++i) 
+    								if(giangViens[i].getgioNghienCuu()==Gionghiencuu)
+									{
+	 									giangViens[i].hienThi();cout<<"\n";
+  			 			 			}
+  			  						cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n";
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								break;
+							}
+							case 4:
+							{
+								int Giochuyenmon;int d=0; 
+								cout<<"Nhap gio chuyen mon can tim: "; cin>>Giochuyenmon; 
+								for (int i = 0; i < soLuongGiangVien; ++i) 
+    							if(giangViens[i].getgioChuyenMon()==Giochuyenmon)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{
+  			 			 			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+ 								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(10)<<"Chuc danh |" 
+    							    << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(10)<<"Gio day |" << setw(13) << "Gio nghien cuu|" << setw(15) << "Gio chuyen mon|" << setw(27) << "Khen thuong |"<< endl;
+       				    			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    								for (int i = 0; i < soLuongGiangVien; ++i) 
+    								if(giangViens[i].getgioChuyenMon()==Giochuyenmon)
+									{
+   										giangViens[i].hienThi();cout<<"\n";
+  			 			 			}
+  			  						cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n";
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								break;
+							}
+							case 5:
+							{
+								string Khenthuong;int d=0; 
+								cout<<"Nhap Khen thuong: "; fflush(stdin); getline(cin,Khenthuong);  
+								for (int i = 0; i < soLuongGiangVien; ++i) 
+    							if(giangViens[i].hoanThanhNhiemVu()==Khenthuong)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{
+  			 			 			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+ 								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(10)<<"Chuc danh |" 
+    							    << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(10)<<"Gio day |" << setw(13) << "Gio nghien cuu|" << setw(15) << "Gio chuyen mon|" << setw(27) << "Khen thuong |"<< endl;
+       				    			cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n"; 
+    								for (int i = 0; i < soLuongGiangVien; ++i) 
+    								if(giangViens[i].hoanThanhNhiemVu()==Khenthuong)
+									{
+	 									giangViens[i].hienThi();cout<<"\n";
+  			 			 			}
+  			  						cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+---------+--------------+--------------+--------------------------+\n";
+								}else cout<<"Khong tim thay du lieu.\n";
+								break;
+							}
+							default:
+							{
+								cout<<"Ban da nhap sai. Vui long nhap(0->5)\n";
+								cout<<endl; 
+								break;	
+							}
+							system("pause"); 
+						}
+					}while (ch != 0);	
+					break; 
+				}
+				case 2:
+				{
+					int ch;
+					do
+					{	
+						system("cls"); 
+						cout<<"\n==============================TIM KIEM CHUYEN VIEN==============================\n";
+						cout<<"0. Thoat chuc nang\n";
+						cout<<"1. Tim kiem Ma CV \n";
+					    cout<<"2. Tim kiem So Sang kien kinh nghiem\n";
+						cout<<"3. Tim kiem Khen thuong\n";
+						cout<<"Nhap lua chon: ";
+						cin>>ch; 
+						switch (ch)
+						{
+							case 0:
+							{
+								cout<<"Tim kiem Chuyen vien hoan tat.";
+								cout<<endl; 
+								system("pause");
+								break;
+							}
+							case 1:
+							{
+								string MaCV;int d=0; 
+								cout<<"Nhap Ma CV can tim: "; fflush(stdin); getline(cin,MaCV); 
+								for (int i = 0; i < soLuongChuyenVien; ++i) 
+    							if(chuyenViens[i].getMa()==MaCV)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{
+								    cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+ 								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<" Chuc danh |" 
+ 								    << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(13) << "So SKKN|"<<setw(26) << "Khen thuong |"<< endl;
+ 							    	cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+   									for (int i = 0; i < soLuongChuyenVien; ++i) 
+   									if(chuyenViens[i].getMa()==MaCV)
+									{
+    									chuyenViens[i].hienThi();cout<<"\n";
+   									}
+   									cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								system("pause");
+								break;
+							}
+							case 2:
+							{
+								int SKKN;int d=0; 
+								cout<<"Nhap so SKKN can tim: "; cin>>SKKN; 
+								for (int i = 0; i < soLuongChuyenVien; ++i) 
+    							if(chuyenViens[i].getsoSangKienKinhNghiem()==SKKN)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{
+								    cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+ 								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<" Chuc danh |" 
+ 								    << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(13) << "So SKKN|"<<setw(26) << "Khen thuong |"<< endl;
+ 							    	cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+   									for (int i = 0; i < soLuongChuyenVien; ++i) 
+   									if(chuyenViens[i].getsoSangKienKinhNghiem()==SKKN)
+									{
+    									chuyenViens[i].hienThi();cout<<"\n";
+   									}
+   									cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+								}else cout<<"Khong tim thay du lieu.\n";
+								system("pause");
+								break;
+							}
+							case 3:
+							{
+								string Khenthuong;int d=0; 
+								cout<<"Nhap Khen thuong: "; fflush(stdin); getline(cin,Khenthuong);  
+								for (int i = 0; i < soLuongGiangVien; ++i) 
+    							if(chuyenViens[i].hoanThanhNhiemVu()==Khenthuong)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{
+  			 			 			cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+ 								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma CB" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<" Chuc danh |" 
+ 								    << setw(11) << "Chuc vu |" << setw(17) << "Don vi |"<<setw(13) << "So SKKN|"<<setw(26) << "Khen thuong |"<< endl;
+ 							    	cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+   									for (int i = 0; i < soLuongChuyenVien; ++i) 
+   									if(chuyenViens[i].hoanThanhNhiemVu()==Khenthuong)
+									{
+    									chuyenViens[i].hienThi();cout<<"\n";
+   									}
+   									cout<<"+-------------------+----------+---------------+----------+-----------+----------+----------------+------------+-------------------------+\n"; 
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								system("pause");
+								break;
+							}
+							default:
+							{
+								cout<<"Ban da nhap sai. Vui long nhap(0->3)\n";
+								cout<<endl; 
+								break;	
+							}
+							system("pause"); 
+						}
+					}while (ch != 0);
+					break; 
+				}
+				case 3:
+ 				{
+					int ch;
+					do
+					{	
+						system("cls"); 
+						cout<<"\n==============================TIM KIEM SINH VIEN==============================\n";
+						cout<<"0. Thoat chuc nang\n";
+						cout<<"1. Tim kiem Ma SV \n";
+					    cout<<"2. Tim kiem Lop\n";
+						cout<<"3. Tim kiem Khoa\n";
+						cout<<"4. Tim kiem Diem trung binh\n";
+						cout<<"5. Tim kiem Khen thuong\n";
+						cout<<"Nhap lua chon: ";
+						cin>>ch; 
+						switch (ch)
+						{
+							case 0:
+							{
+								cout<<"Tim kiem Sinh vien hoan tat.";
+								cout<<endl;
+								system("pause"); 
+								break;
+							}
+							case 1:
+							{
+								string MaSV;int d=0; 
+								cout<<"Nhap Ma SV can tim: "; fflush(stdin);getline(cin,MaSV); 
+								for (int i = 0; i < soLuongSinhVien; ++i) 
+    							if(sinhViens[i].getMSV()==MaSV)
+								{d++;}
+  					 			if(d>0) 
+  			 					{	
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+  								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma HS" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<"  Lop |" << setw(11) << " Khoa |" << setw(17) << "Diem Trung binh |"<<setw(15)<<"Xep loai |"<< endl;
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								    for (int i = 0; i < soLuongSinhVien; ++i) 
+								    if(sinhViens[i].getMSV()==MaSV)
+									{
+										sinhViens[i].hienThi();cout<<"\n";
+ 							   		}
+ 							   		cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								system("pause");break; 
+							}
+							case 2:
+							{
+								string Lop;int d=0; 
+								cout<<"Nhap lop can tim: "; fflush(stdin); getline(cin,Lop); 
+								for (int i = 0; i < soLuongSinhVien; ++i) 
+    							if(sinhViens[i].getlop()==Lop)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{	
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+  								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma HS" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<"  Lop |" << setw(11) << " Khoa |" << setw(17) << "Diem Trung binh |"<<setw(15)<<"Xep loai |"<< endl;
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								    for (int i = 0; i < soLuongSinhVien; ++i) 
+								    if(sinhViens[i].getlop()==Lop)
+									{
+							    		sinhViens[i].hienThi();cout<<"\n";
+ 							   		}
+ 							   		cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								system("pause");
+								break;
+							}
+							case 3:
+ 							{
+								string Khoa;int d=0; 
+								cout<<"Nhap khoa can tim: "; fflush(stdin); getline(cin,Khoa); 
+								for (int i = 0; i < soLuongSinhVien; ++i) 
+    							if(sinhViens[i].getkhoa()==Khoa)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{	
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+  								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma HS" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<"  Lop |" << setw(11) << " Khoa |" << setw(17) << "Diem Trung binh |"<<setw(15)<<"Xep loai |"<< endl;
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								    for (int i = 0; i < soLuongSinhVien; ++i) 
+								    if(sinhViens[i].getkhoa()==Khoa)
+									{
+							    		sinhViens[i].hienThi();cout<<"\n";
+ 							   		}
+ 							   		cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								system("pause");
+								break;
+							}
+							case 4:
+							{
+								double DiemTB;int d=0; 
+								cout<<"Nhap diem trung binh can tim: "; cin>>DiemTB; 
+								for (int i = 0; i < soLuongSinhVien; ++i) 
+    							if(sinhViens[i].getdiemTB()==DiemTB)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{	
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+  								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma HS" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<"  Lop |" << setw(11) << " Khoa |" << setw(17) << "Diem Trung binh |"<<setw(15)<<"Xep loai |"<< endl;
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								    for (int i = 0; i < soLuongSinhVien; ++i) 
+								    if(sinhViens[i].getdiemTB()==DiemTB)
+									{
+							    		sinhViens[i].hienThi();cout<<"\n";
+ 							   		}
+ 							   		cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								system("pause");
+								break;
+							}
+							case 5:
+							{
+								string Khenthuong;int d=0; 
+								cout<<"Nhap Khen thuong: "; fflush(stdin); getline(cin,Khenthuong);  
+								for (int i = 0; i < soLuongSinhVien; ++i) 
+    							if(sinhViens[i].xepLoai()==Khenthuong)
+								{d++;break;}
+  					 			if(d>0) 
+  			 					{	
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+  								    cout <<"|"<< setw(20) << "Ho va ten |"<< setw(10) << "Ma HS" <<"|"<< setw(16) << "Ngay sinh |"<<setw(10) << "Gioi tinh |"<<setw(11)<<"  Lop |" << setw(11) << " Khoa |" << setw(17) << "Diem Trung binh |"<<setw(15)<<"Xep loai |"<< endl;
+								    cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								    for (int i = 0; i < soLuongSinhVien; ++i) 
+								    if(sinhViens[i].xepLoai()==Khenthuong)
+									{										
+							    		sinhViens[i].hienThi();cout<<"\n";
+ 							   		}
+ 							   		cout<<"+-------------------+----------+---------------+----------+----------+----------+----------------+--------------+\n"; 
+								}else cout<<"Khong tim thay du lieu.\n"; 
+								system("pause"); 
+								break;
+							}
+							default:
+							{
+								cout<<"Ban da nhap sai. Vui long nhap(0->5)\n";
+								cout<<endl; 
+								break;	
+							}
+							system("pause"); 
+						}
+					}while (ch != 0);
+				}
+				default:
+				{
+					cout<<"Ban da nhap sai. Vui long nhap(0->3)\n";
+					cout<<endl; 
+					break;
+				}
+				break; 
+			}
+			system("pause"); 
+		}while (chon != 0);
+	}	
+    //outputFile.close();
+};
+void quanlyNS(QuanLy &ql)
+{
+	ofstream g;
+	g.open("Quanly.out");
+	ql.Nhap(); 
+	ql.hienThiGiangVien(g);
+	ql.hienThiChuyenVien(g);  
+	ql.hienThiSinhVien(g);  
+	ql.sxgv(g);
+	ql.hienThiGiangVien(g);
+	ql.sxcv(g); 
+	ql.hienThiChuyenVien(g);  
+	ql.sxsv(g);
+	ql.hienThiSinhVien(g);
+	cout<<"Da hien thi ket qua vao file Quanly.out. ";
+	system("pause"); 
+	ql.TimKiemTheoCacTieuChi(); 
+} 
+int main() {
+    QuanLy ql;
+	quanlyNS(ql); 
+    return 0;
+}
